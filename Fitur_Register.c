@@ -115,16 +115,23 @@ bool isUsernameExists(char *username) {
 bool isAlphaNumeric(char *password) {
     bool hasLetter = false;
     bool hasDigit = false;
-    int i;
+    int length = 0;
+    int i = 0;
 
-    for (i = 0; password[i] != '\0'; i++) {
+    while (password[i] != '\0') {
         if (isalpha(password[i])) {
             hasLetter = true;
         } else if (isdigit(password[i])) {
             hasDigit = true;
         }
+        length++;
+        i++;
     }
-    return hasLetter && hasDigit;
+    if(length >= 8){
+    	return hasLetter && hasDigit;
+	}else{
+		return false;
+	}
 }
 
 // Fungsi Register
@@ -140,7 +147,7 @@ void Register(int index) {
     system("cls");
     printf("\tRegister Akun\n\n");
     
-    printf("Masukkan nama anda : ");
+    printf("Masukkan nama anda (Tanpa spasi) : ");
     scanf("%s", user[index].Nama);
     
     // Meminta pengguna untuk memasukkan email yang memenuhi kriteria
@@ -164,27 +171,12 @@ void Register(int index) {
         printf("Masukkan username : ");
         scanf("%s", user[index].username);
         if (isUsernameExists(user[index].username)) {
-            printf("Username sudah digunakan. Masukkan username lain.\n");
+            printf("Username sudah digunakan. Masukkan username lain.\n");		// Ketika username sudah ada di file
         } else {
-            isUsernameValid = true;
+            isUsernameValid = true;		// username belum ada di file
         }
     } while (!isUsernameValid);
-    
-    // Meminta pengguna untuk memasukkan password yang memenuhi kriteria
-    bool isValidPassword = false;
-    do {
-        printf("Masukkan password (harus terdiri dari angka dan huruf): ");
-        scanf("%s", password);
 
-        if (!isAlphaNumeric(password)) {
-            printf("Password harus terdiri dari angka dan huruf.\n");
-        } else {
-            isValidPassword = true;
-        }
-    } while (!isValidPassword);
-    
-    // Set password ke dalam struct user
-    strcpy(user[index].password, password);
     system("cls");
     
     // Input matriks kunci
@@ -201,8 +193,22 @@ void Register(int index) {
 
     // Input password
     char plain_password[MAX];
-    printf("Masukkan password: ");
-    scanf("%s", plain_password);
+    bool isValidPassword = false;
+    do {
+        printf("Masukkan password (minimal panjang password 8, harus terdiri dari angka dan huruf): ");
+        scanf("%s", password);
+
+        if (!isAlphaNumeric(password)) {
+            printf("Password tidak sesuai kriteria.\n");	// Ketika password false
+        } else {
+            isValidPassword = true;		// Ketika passwor true
+        }
+    } while (!isValidPassword);
+    
+    // Set password ke dalam struct user
+    strcpy(user[index].password, password);
+    // Set password ke dalam plain_password
+    strcpy(plain_password, password);
 
     // Enkripsi password
     char encrypted_password[MAX];
