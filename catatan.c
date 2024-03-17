@@ -1,137 +1,350 @@
-
+//catatan.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "allmodul.h"
+#include <time.h>
+#include "catatan.h"
+#include "LoginRegister.h"
 
+int nomorCatatanTerakhir = 0;
 
-// Fungsi bantuan untuk membandingkan dua catatan berdasarkan tanggal
-int bandingkanCatatan(const void *a, const void *b) {
-    struct Catatan *catatanA = (struct Catatan *)a;
-    struct Catatan *catatanB = (struct Catatan *)b;
-    return strcmp(catatanB->tanggal, catatanA->tanggal); // Urutkan secara descending berdasarkan tanggal
-}
+void MenuUtama() {
+    int pilihan;
+    char judul[100];
 
+    do {
+        hapusLayar(); // Clear console screen
+        printf("\t\t\t\t===================================\n");
+        printf("\t\t\t\t          Menu Utama\n");
+        printf("\t\t\t\t===================================\n");
+        printf("\t\t\t\t1. Tambah Catatan\n");
+        printf("\t\t\t\t2. Tampil Daftar Catatan\n");
+        printf("\t\t\t\t3. Tampil Isi Catatan\n");
+        printf("\t\t\t\t4. Edit Catatan\n");
+        printf("\t\t\t\t5. Hapus Catatan\n");
+        printf("\t\t\t\t0. Keluar\n");
+        printf("\t\t\t\t===================================\n");
+        printf("\t\t\t\tPilihan Anda: ");
+        scanf("%d", &pilihan);
 
-// Fungsi untuk membaca catatan dari file dan menyimpannya dalam array
-int bacaCatatanDariFile(struct Catatan *catatan) {
-    FILE *file = fopen("Catatan.txt", "r");
-    if (file == NULL) {
-        printf("Tidak ada catatan yang tersedia.\n");
-        return 0;
-    }
-    int jumlahCatatan = 0;
-    struct Catatan temp;
-    while (fscanf(file, "%d|%[^|]|%[^|]|%[^\n]\n", &temp.no, temp.judul, temp.tanggal, temp.isi) != EOF) {
-        catatan[jumlahCatatan] = temp;
-        jumlahCatatan++;
-        // Update nilai idCatatanTerakhir jika no catatan yang dibaca lebih besar
-        if (temp.no > idCatatanTerakhir) {
-            idCatatanTerakhir = temp.no;
+        switch (pilihan) {
+            case 1:
+                tambahCatatan();
+                break;
+            case 2:
+                tampilDaftarCatatan();
+                break;
+            case 3:
+                hapusLayar(); // Clear console screen
+                printf("\t\t\t\tMasukkan judul catatan: ");
+                scanf(" %[^\n]s", judul);
+                tampilIsiCatatan(judul);
+                break;
+            case 4:
+                hapusLayar(); // Clear console screen
+                printf("\t\t\t\tMasukkan judul catatan yang ingin diedit: ");
+                scanf(" %[^\n]s", judul);
+                editCatatan(judul);
+                break;
+            case 5:
+                hapusLayar(); // Clear console screen
+                printf("\t\t\t\tMasukkan judul catatan yang ingin dihapus: ");
+                scanf(" %[^\n]s", judul);
+                hapusCatatan(judul);
+                break;
+            case 0:
+                printf("\tKeluar...\n");
+                break;
+            default:
+                printf("\t\t\t\tPilihan tidak valid.\n");
         }
-    }
-    fclose(file);
-    return jumlahCatatan;
+        printf("\tTekan tombol 'Enter' untuk melanjutkan...");
+        while (getchar() != '\n'); // Clear input buffer
+        getchar(); // Wait for Enter key
+    } while (pilihan != 0);
 }
 
-// Fungsi untuk menampilkan daftar catatan dengan judul dan tanggal, diurutkan berdasarkan tanggal terbaru
-void tampilkanCatatan(struct Catatan *catatan, int jumlahCatatan) {
-    // Mengurutkan catatan berdasarkan tanggal terbaru
-    qsort(catatan, jumlahCatatan, sizeof(struct Catatan), bandingkanCatatan);
-    // Menampilkan daftar catatan yang telah diurutkan
-    printf("\t\t\tNo.  | Judul               | Tanggal\n");
-    printf("\t\t\t--------------------------------------\n");
-    for (int i = 0; i < jumlahCatatan; i++) {
-        printf("\t\t\t%-5d| %-20s| %s\n", i + 1, catatan[i].judul, catatan[i].tanggal);
-    }
-    printf("\t\t\t--------------------------------------\n");
+void hapusLayar() {
+    system("cls"); 
 }
 
-// Fungsi untuk menampilkan isi catatan dengan dekripsi Vigenere
-void tampilkanIsiCatatanBerdasarkanJudul(struct Catatan *catatan, int jumlahCatatan, char *judul, char *kunciEnkripsi) {
-    int ditemukan = 0;
-    for (int i = 0; i < jumlahCatatan; i++) {
-        if (strcmp(catatan[i].judul, judul) == 0) {
-            ditemukan = 1;
-            printf("\n\t\t\t=== Isi Catatan ===\n\n");
-            printf("\t\t\tJudul : %s\n", catatan[i].judul);
-            printf("\t\t\tTanggal: %s\n", catatan[i].tanggal);
-            printf("\t\t\t-----------------------------------------\n");
-            printf("\t\t\tIsi Pesan:\n");
-            
-            // Decrypt and display note content
-            char decryptedContent[500];
-            strcpy(decryptedContent, catatan[i].isi);
-            dekripsiVigenere(decryptedContent, kunciEnkripsi);
-            printf("\n");
-            printf("\t\t\t%s\n", decryptedContent);
-
-            printf("\t\t\t-----------------------------------------\n");
-            break;
-        }
-    }
-    if (!ditemukan) {
-        printf("Catatan dengan judul '%s' tidak ditemukan.\n", judul);
-    }
-}
-
-// Fungsi untuk menyimpan catatan dari array ke file setelah diurutkan berdasarkan tanggal
-void simpanCatatanKeFile(struct Catatan *catatan, int jumlahCatatan) {
-    qsort(catatan, jumlahCatatan, sizeof(struct Catatan), bandingkanCatatan); // Urutkan catatan berdasarkan tanggal
-    FILE *file = fopen("Catatan.txt", "w");
+void tambahCatatan() {
+    FILE *file = fopen("Catatan.txt", "a");
     if (file == NULL) {
-        printf("Gagal membuka file.\n");
+        printf("Error: Gagal membuka file.\n");
         return;
     }
-    for (int i = 0; i < jumlahCatatan; i++) {
-        fprintf(file, "%d|%s|%s|%s\n", catatan[i].no, catatan[i].judul, catatan[i].tanggal, catatan[i].isi);
-    }
+
+    struct Catatan catatan;
+    nomorCatatanTerakhir++;        
+
+    catatan.no = nomorCatatanTerakhir;
+
+    printf("\tMasukkan judul catatan: ");
+    scanf(" %[^\n]s", catatan.judul);
+
+    // Ambil tanggal saat ini
+    time_t rawtime;
+    struct tm *info;
+    char buffer[11];
+    time(&rawtime);
+    info = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "%d/%m/%Y", info);
+    strcpy(catatan.tanggal, buffer);
+
+    printf("\tMasukkan isi catatan:\n");
+    scanf(" %[^\n]s", catatan.isi);
+
+    char kunci[MAX_KEY];
+    printf("\tMasukkan kunci enkripsi: ");
+    scanf(" %[^\n]s", kunci);
+    
+    enkripsiVigenere(catatan.isi, kunci);
+    
+    fprintf(file, "%d|%s|%s|%s\n", catatan.no, catatan.judul, catatan.tanggal, catatan.isi);
+
     fclose(file);
+
+    printf("\tCatatan berhasil ditambahkan.\n");
 }
 
-// Fungsi untuk mengedit catatan berdasarkan judul
-void editCatatanBerdasarkanJudul(struct Catatan *catatan, int jumlahCatatan, char *judul, char *kunciEnkripsi) {
-    for (int i = 0; i < jumlahCatatan; i++) {
-        if (strcmp(catatan[i].judul, judul) == 0) {
-            // Dekripsi isi catatan sebelum mengedit
-            dekripsiVigenere(catatan[i].isi, kunciEnkripsi);
-            
-            printf("\t\t\tJudul: ");
-            scanf(" %[^\n]s", catatan[i].judul);
-            printf("\t\t\tTanggal (YYYY-MM-DD): ");
-            scanf(" %[^\n]s", catatan[i].tanggal);
-            printf("\t\t\tIsi pesan: ");
-            scanf(" %[^\n]s", catatan[i].isi);
-            
-            // Enkripsi kembali isi catatan setelah mengedit
-            enkripsiVigenere(catatan[i].isi, kunciEnkripsi);
-            
-            printf("Catatan dengan judul '%s' berhasil diubah.\n", judul);
-            return;
+void tampilDaftarCatatan() {
+    FILE *file = fopen("Catatan.txt", "r");
+    if (file == NULL) {
+        printf("Error: Gagal membuka file.\n");
+        return;
+    }
+
+    struct Catatan catatan[MAX_CATATAN];
+    int count = 0;
+    while (fscanf(file, "%d|%[^|]|%[^|]|%[^\n]\n", &catatan[count].no, catatan[count].judul, catatan[count].tanggal, catatan[count].isi) != EOF) {
+        count++;
+    }
+
+    fclose(file);
+
+    // Mengupdate nomor catatan
+    for (int i = 0; i < count; i++) {
+        catatan[i].no = i + 1;
+    }
+
+    // Urutkan catatan berdasarkan tanggal terbaru menggunakan bubble sort
+    int i, j;
+    for (i = 0; i < count - 1; i++) {
+        for (j = 0; j < count - i - 1; j++) {
+            // Konversi tanggal dari format "DD/MM/YYYY" menjadi integer untuk perbandingan
+            int tahun1, bulan1, hari1;
+            int tahun2, bulan2, hari2;
+            sscanf(catatan[j].tanggal, "%d/%d/%d", &hari1, &bulan1, &tahun1);
+            sscanf(catatan[j + 1].tanggal, "%d/%d/%d", &hari2, &bulan2, &tahun2);
+
+            // Bandingkan tahun
+            if (tahun1 < tahun2 || (tahun1 == tahun2 && bulan1 < bulan2) || (tahun1 == tahun2 && bulan1 == bulan2 && hari1 < hari2)) {
+                // Tukar posisi catatan
+                struct Catatan temp = catatan[j];
+                catatan[j] = catatan[j + 1];
+                catatan[j + 1] = temp;
+            }
         }
     }
-    printf("Catatan dengan judul '%s' tidak ditemukan.\n", judul);
+
+    // Tampilkan daftar catatan yang sudah diurutkan
+    printf("\t==============================================================\n");
+    printf("\tNo\t| Judul\t\t\t\t| Tanggal\n");
+    printf("\t==============================================================\n");
+    for (i = 0; i < count; i++) {
+        printf("\t%d\t| %-25s     | %-10s\n", catatan[i].no, catatan[i].judul, catatan[i].tanggal);
+    }
+    printf("\t==============================================================\n");
+
+    if (count == 0) {
+        printf("\tDaftar catatan kosong.\n");
+    }
 }
 
-// Fungsi untuk menghapus catatan berdasarkan judul
-void hapusCatatanBerdasarkanJudul(struct Catatan *catatan, int *jumlahCatatan, char *judul) {
-    int ditemukan = 0;
-    for (int i = 0; i < *jumlahCatatan; i++) {
-        if (strcmp(catatan[i].judul, judul) == 0) {
-            ditemukan = 1;
-            for (int j = i; j < *jumlahCatatan - 1; j++) {
-                catatan[j] = catatan[j + 1];
+
+
+void tampilIsiCatatan(char judul[]) {
+    FILE *file = fopen("Catatan.txt", "r");
+    if (file == NULL) {
+        printf("Error: Gagal membuka file.\n");
+        return;
+    }
+
+    struct Catatan catatan;
+    int found = 0;
+    while (fscanf(file, "%d|%[^|]|%[^|]|%[^\n]\n", &catatan.no, catatan.judul, catatan.tanggal, catatan.isi) != EOF) {
+        if (strcmp(catatan.judul, judul) == 0) {
+            found = 1;
+            printf("\t====================================\n");
+            printf("\tJudul: %s\n", catatan.judul);
+            printf("\tTanggal: %s\n", catatan.tanggal);
+            printf("\tIsi:\n");
+            
+            // Baca kunci enkripsi dari pengguna
+            char kunci[MAX_KEY];
+            printf("\tMasukkan kunci dekripsi: ");
+            scanf(" %[^\n]s", kunci);
+            
+            // Dekripsi isi catatan
+            dekripsiVigenere(catatan.isi, kunci);
+            
+            // Tampilkan isi catatan yang telah didekripsi dengan format vertikal
+            char *token = strtok(catatan.isi, "\n");
+            while (token != NULL) {
+                printf("\t- %s\n", token);
+                token = strtok(NULL, "\n");
             }
-            (*jumlahCatatan)--;
-            printf("Catatan dengan judul '%s' berhasil dihapus.\n", judul);
+            printf("\t====================================\n");
             break;
         }
     }
-    if (!ditemukan) {
-        printf("Catatan dengan judul '%s' tidak ditemukan.\n", judul);
-    } else {
-        // Menulis ulang seluruh catatan ke file setelah penghapusan
-        simpanCatatanKeFile(catatan, *jumlahCatatan);
+
+    fclose(file);
+    if (!found) {
+        printf("\tCatatan dengan judul '%s' tidak ditemukan.\n", judul);
     }
 }
+
+
+void editCatatan(char judul[]) {
+    int i, j;
+
+    FILE *file = fopen("Catatan.txt", "r");
+    if (file == NULL) {
+        printf("Error: Gagal membuka file.\n");
+        return;
+    }
+
+    struct Catatan catatan[MAX_CATATAN];
+    int count = 0;
+    while (fscanf(file, "%d|%[^|]|%[^|]|%[^\n]\n", &catatan[count].no, catatan[count].judul, catatan[count].tanggal, catatan[count].isi) != EOF) {
+        count++;
+    }
+
+    fclose(file);
+
+    int found = 0;
+    for (i = 0; i < count; i++) {
+        if (strcmp(catatan[i].judul, judul) == 0) {
+            found = 1;
+            printf("\tCatatan ditemukan.\n");
+            printf("\tApa yang ingin Anda edit?\n");
+            printf("\t1. Judul\n");
+            printf("\t2. Isi\n");
+            printf("\tPilihan Anda: ");
+            int pilihanEdit;
+            scanf("%d", &pilihanEdit);
+
+            switch (pilihanEdit) {
+                case 1:
+                    printf("\tMasukkan judul baru: ");
+                    scanf(" %[^\n]s", catatan[i].judul);
+                    // Perbarui tanggal saat ini
+                    time_t rawtime;
+                    struct tm *info;
+                    char buffer[11];
+                    time(&rawtime);
+                    info = localtime(&rawtime);
+                    strftime(buffer, sizeof(buffer), "%d/%m/%Y", info);
+                    strcpy(catatan[i].tanggal, buffer);
+                    break;
+                case 2:
+                    printf("\tMasukkan isi baru:\n");
+                    scanf(" %[^\n]s", catatan[i].isi);
+                    // Perbarui tanggal saat ini
+                    time(&rawtime);
+                    info = localtime(&rawtime);
+                    strftime(buffer, sizeof(buffer), "%d/%m/%Y", info);
+                    strcpy(catatan[i].tanggal, buffer);
+                    char kunci[MAX_KEY];
+                    printf("\tMasukkan kunci enkripsi: ");
+                    scanf(" %[^\n]s", kunci);
+                    enkripsiVigenere(catatan[i].isi, kunci);
+                    break;
+                default:
+                    printf("\tPilihan tidak valid.\n");
+                    return;
+            }
+
+            printf("\tApakah Anda yakin ingin menyimpan perubahan? (Y/N): ");
+            char konfirmasi;
+            scanf(" %c", &konfirmasi);
+            if (konfirmasi == 'Y' || konfirmasi == 'y') {
+                FILE *file = fopen("Catatan.txt", "w");
+                if (file == NULL) {
+                    printf("Error: Gagal membuka file.\n");
+                    return;
+                }
+
+                for (j = 0; j < count; j++) {
+                    fprintf(file, "%d|%s|%s|%s\n", catatan[j].no, catatan[j].judul, catatan[j].tanggal, catatan[j].isi);
+                }
+
+                fclose(file);
+
+                printf("\tCatatan berhasil diubah.\n");
+            } else {
+                printf("\tPerubahan dibatalkan.\n");
+            }
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("\tCatatan dengan judul '%s' tidak ditemukan.\n", judul);
+    }
+}
+
+
+
+void hapusCatatan(char judul[]) {
+    
+    int i,j;
+    
+    FILE *file = fopen("Catatan.txt", "r");
+    if (file == NULL) {
+        printf("Error: Gagal membuka file.\n");
+        return;
+    }
+
+    struct Catatan catatan[MAX_CATATAN];
+    int count = 0;
+    while (fscanf(file, "%d|%[^|]|%[^|]|%[^\n]\n", &catatan[count].no, catatan[count].judul, catatan[count].tanggal, catatan[count].isi) != EOF) {
+        count++;
+    }
+
+    fclose(file);
+
+    int found = 0;
+    for (i = 0; i < count; i++) {
+        if (strcmp(catatan[i].judul, judul) == 0) {
+            found = 1;
+            for (j = i; j < count - 1; j++) {
+                catatan[j] = catatan[j + 1];
+            }
+            count--;
+
+            FILE *file = fopen("Catatan.txt", "w");
+            if (file == NULL) {
+                printf("Error: Gagal membuka file.\n");
+                return;
+            }
+
+            for (j = 0; j < count; j++) {
+                fprintf(file, "%d|%s|%s|%s\n", catatan[j].no, catatan[j].judul, catatan[j].tanggal, catatan[j].isi);
+            }
+
+            fclose(file);
+
+            printf("\tCatatan berhasil dihapus.\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("\tCatatan dengan judul '%s' tidak ditemukan.\n", judul);
+    }
+}
+
