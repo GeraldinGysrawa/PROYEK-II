@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include "allmodul.h"
 #define MAX 100
 
 // Struktur pengguna

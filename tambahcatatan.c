@@ -5,7 +5,7 @@ int nomorCatatanTerakhir = 0;
 
 void tambahCatatan() {
 
-    FILE *file = fopen("catatan.txt", "a");
+    FILE *file = fopen("Catatan.txt", "a");
     if (file == NULL) {
         printf("Error: Gagal membuka file.\n");
         return;
