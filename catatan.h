@@ -10,9 +10,9 @@ struct Catatan {
 };
 
 void enkripsiVigenere(char teks[], char kunci[]);
+
+
 void dekripsiVigenere(char teks[], char kunci[]);
-// struct Catatan buatCatatan(char *judul, char *tanggal, char *isi, char *kunciEnkripsi);
-// void tambahCatatanKeFile(struct Catatan catatanBaru);
 int bacaCatatanDariFile(struct Catatan *catatan);
 void tampilkanCatatan(struct Catatan *catatan, int jumlahCatatan);
 void tampilkanIsiCatatanBerdasarkanJudul(struct Catatan *catatan, int jumlahCatatan, char *judul, char *kunciEnkripsi);
