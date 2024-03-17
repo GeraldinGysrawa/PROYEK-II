@@ -221,26 +221,28 @@ void Register(int index) {
 }
 
 // untuk login
-void Login(){
+void Login(bool *loggedIn) {
     char username[100], password[100];
     system("cls");
     system("color 3F");
     printf("\t\t\t\t===================================\n");
-	printf("\t\t\t\t              LOGIN                \n");
-	printf("\t\t\t\t===================================\n");
-	printf("\t\t\t\tUsername:");
-	scanf("%s", username);
-	printf("\t\t\t\tPassword: ");
-	scanf("%s", password);
+    printf("\t\t\t\t              LOGIN                \n");
+    printf("\t\t\t\t===================================\n");
+    printf("\t\t\t\tUsername:");
+    scanf("%s", username);
+    printf("\t\t\t\tPassword: ");
+    scanf("%s", password);
 
     // Membersihkan buffer input
     getchar();
-    
+
     // Memeriksa kecocokan username dan password
     if (checkCredentials(username, password, "file_user1.3.txt")) {
-    	printf("\t\t\t\tLogin berhasil!\n");
+        printf("\t\t\t\tLogin berhasil!\n");
+        *loggedIn = true; // Mengubah nilai variabel loggedIn menjadi true jika login berhasil
     } else {
         printf("Login gagal. Username atau password salah.\n");
+        *loggedIn = false; // Mengubah nilai variabel loggedIn menjadi false jika login gagal
     }
     getch();
 }

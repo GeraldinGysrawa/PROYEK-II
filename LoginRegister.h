@@ -20,7 +20,7 @@ bool isUsernameExists(char *username);
 void multiplyMatrix(int key[2][2], int message[2][1], int res[2][1]);
 void encryptPassword(char *plain_password, char *encrypted_password);
 void decryptPassword(char *encrypted_password, char *decrypted_password);
-void Login();
+void Login(bool *loggedIn);
 void Register(int index);
 
 

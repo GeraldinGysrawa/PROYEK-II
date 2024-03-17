@@ -35,13 +35,14 @@ int main() {
                 Register(in);
                 break;
             case 2:
-                Login();
+                Login(&loggedIn); // Mengirimkan alamat variabel loggedIn agar dapat diubah di dalam fungsi
                 break;
-        }
-
-        // Jika login berhasil, set loggedIn ke true
-        if (num == 2) {
-            loggedIn = true;
+            case 3:
+                // Jika keluar dipilih, langsung keluar dari loop
+                break;
+            default:
+                printf("Pilihan tidak valid.\n");
+                break;
         }
 
         // Jika sudah login, panggil MenuUtama dan reset loggedIn
