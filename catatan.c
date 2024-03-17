@@ -37,18 +37,21 @@ void MenuUtama() {
                 break;
             case 3:
                 hapusLayar(); // Clear console screen
+                tampilDaftarCatatan();
                 printf("\t\t\t\tMasukkan judul catatan: ");
                 scanf(" %[^\n]s", judul);
                 tampilIsiCatatan(judul);
                 break;
             case 4:
                 hapusLayar(); // Clear console screen
+                tampilDaftarCatatan();
                 printf("\t\t\t\tMasukkan judul catatan yang ingin diedit: ");
                 scanf(" %[^\n]s", judul);
                 editCatatan(judul);
                 break;
             case 5:
                 hapusLayar(); // Clear console screen
+                tampilDaftarCatatan();
                 printf("\t\t\t\tMasukkan judul catatan yang ingin dihapus: ");
                 scanf(" %[^\n]s", judul);
                 hapusCatatan(judul);
