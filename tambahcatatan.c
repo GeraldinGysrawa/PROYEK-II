@@ -37,11 +37,9 @@
 //    printf("\tMasukkan isi catatan:\n");
 //    scanf(" %[^\n]s", catatan.isi);
 //
-//    char kunci[MAX_KEY];
-//    printf("\tMasukkan kunci enkripsi: ");
-//    scanf(" %[^\n]s", kunci);
-//    
-//    enkripsiVigenere(catatan.isi, kunci);
+//     // proses enkripsi
+//      char kunci[MAX_KEY] = "PROYEK";
+//      enkripsiVigenere(catatan.isi, kunci);
 //    
 //    fprintf(file, "%d|%s|%s|%s\n", catatan.no, catatan.judul, catatan.tanggal, catatan.isi);
 //

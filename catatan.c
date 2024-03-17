@@ -99,9 +99,9 @@ void tambahCatatan() {
     printf("\tMasukkan isi catatan:\n");
     scanf(" %[^\n]s", catatan.isi);
 
-    char kunci[MAX_KEY];
-    printf("\tMasukkan kunci enkripsi: ");
-    scanf(" %[^\n]s", kunci);
+    //proses enkripsi
+    char kunci[MAX_KEY] = "PROYEK";
+    enkripsiVigenere(catatan.isi, kunci);
     
     enkripsiVigenere(catatan.isi, kunci);
     
@@ -186,11 +186,7 @@ void tampilIsiCatatan(char judul[]) {
             printf("\tIsi:\n");
             
             // Baca kunci enkripsi dari pengguna
-            char kunci[MAX_KEY];
-            printf("\tMasukkan kunci dekripsi: ");
-            scanf(" %[^\n]s", kunci);
-            
-            // Dekripsi isi catatan
+            char kunci[MAX_KEY] = "PROYEK";
             dekripsiVigenere(catatan.isi, kunci);
             
             // Tampilkan isi catatan yang telah didekripsi dengan format vertikal
@@ -261,9 +257,8 @@ void editCatatan(char judul[]) {
                     info = localtime(&rawtime);
                     strftime(buffer, sizeof(buffer), "%d/%m/%Y", info);
                     strcpy(catatan[i].tanggal, buffer);
-                    char kunci[MAX_KEY];
-                    printf("\tMasukkan kunci enkripsi: ");
-                    scanf(" %[^\n]s", kunci);
+                    //// Baca kunci enkripsi dari pengguna
+                    char kunci[MAX_KEY] = "PROYEK";
                     enkripsiVigenere(catatan[i].isi, kunci);
                     break;
                 default:
