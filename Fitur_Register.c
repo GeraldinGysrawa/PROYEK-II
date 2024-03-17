@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <conio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -14,22 +15,22 @@ struct users {
 };
 
 // Deklarasi prototipe fungsi
-void multiplyMatrix(int key[MAX][MAX], int message[MAX][1], int res[MAX][1], int n);
-void encryptPassword(char *plain_password, int key[MAX][MAX], char *encrypted_password, int n);
+void multiplyMatrix(int key[2][2], int message[MAX][1], int res[MAX][1], int n);
+void encryptPassword(char *plain_password, int key[2][2], char *encrypted_password, int n);
 
-// Untuk perkalian matriks
-void multiplyMatrix(int key[MAX][MAX], int message[MAX][1], int res[MAX][1], int n) {
+// Untuk perkalian matriks 2x2
+void multiplyMatrix(int key[2][2], int message[MAX][1], int res[MAX][1], int n) {
     int i, j;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < 2; i++) {		// Iterasi matriks kunci
         res[i][0] = 0;
-        for (j = 0; j < n; j++) {
+        for (j = 0; j < 2; j++) {		// Iterasi matriks pesan
             res[i][0] += key[i][j] * message[j][0];
         }
     }
 }
 
 // Untuk enkripsi Hill Cipher
-void encryptPassword(char *plain_password, int key[MAX][MAX], char *encrypted_password, int n) {
+void encryptPassword(char *plain_password, int key[2][2], char *encrypted_password, int n) {
     int len = strlen(plain_password);
     int rows = len / n;
     int padding = (len % n != 0) ? (n - len % n) : 0; // Hitung jumlah padding yang diperlukan
@@ -46,30 +47,41 @@ void encryptPassword(char *plain_password, int key[MAX][MAX], char *encrypted_pa
     // Enkripsi password setelah padding
     int r, i, k = 0;
     for (r = 0; r < total_rows; r++) {
-        int message[MAX][1], result[MAX][1];
-        for (i = 0; i < n; i++) {
+        int message[2][1], result[2][1];
+        for (i = 0; i < 2; i++) {
             // Hanya enkripsi karakter alfabet
-            if (padded_password[r * n + i] >= 'a' && padded_password[r * n + i] <= 'z') {
-                message[i][0] = padded_password[r * n + i] - 'a';
-            } else {
-                // Salin karakter non-alfabet tanpa enkripsi
-                message[i][0] = padded_password[r * n + i];
-            }
-        }
+            // Mengecek karakter
+            if (isalpha(padded_password[r * 2 + i])){
+            	// Jika karakter adalah huruf kecil 'a'-'z'
+            	if(islower(padded_password[r *2 +i])){
+            		message[i][0] = padded_password[r * 2 + i] - 'a';
+            	// Jika karakter adalah huruf kapital 'A'-'Z'
+	            } else if (isupper(padded_password[r * 2 + i])){
+	            	message[i][0] = padded_password[r * 2 + i] - 'A' + 26;
+	            } else {
+	            // Salin karakter non-alfabet tanpa enkripsi
+	                message[i][0] = padded_password[r * 2 + i];
+				}
+	        }
+		}
 
         // Lanjutkan proses enkripsi untuk karakter alfabet
-        multiplyMatrix(key, message, result, n);
-        for (i = 0; i < n; i++) {
-            if (padded_password[r * n + i] >= 'a' && padded_password[r * n + i] <= 'z') {
+        multiplyMatrix(key, message, result, 2);
+        for (i = 0; i < 2; i++) {
+        	// Jika karakter huruf kecil 'a'-'z'
+            if (islower(padded_password[r * 2 + i])) {
                 int num = (result[i][0] % 26);
-                if (num < 0) num += 26; // Menangani nilai negatif
                 encrypted_password[k++] = num + 'a';
-            } else {
-                // Salin karakter non-alfabet tanpa enkripsi
-                encrypted_password[k++] = padded_password[r * n + i];
-            }
+            // Jika karakter huruf kapital 'A'-'Z'
+            } else if (isupper(padded_password[r * 2 + i])){
+            	int num = (result[i][0] % 26);
+                encrypted_password[k++] = num + 'A';
+            } else{
+            // Salin karakter non-alfabet tanpa enkripsi
+                encrypted_password[k++] = padded_password[r * 2 + i];
+			}
         }
-    }
+	}
     encrypted_password[k] = '\0'; // Menambahkan null terminator
 }
 
@@ -81,6 +93,7 @@ bool isEmailValid(char *email) {
     if (email[0] == '@' || email[len - 1] == '@') {
         return false;
     }
+    // Memastikan '@' hanya ada satu
     for (i = 0; i < len; i++) {
         if (email[i] == '@') {
             atCount++;
@@ -177,20 +190,6 @@ void Register(int index) {
         }
     } while (!isUsernameValid);
 
-    system("cls");
-    
-    // Input matriks kunci
-    int n, i, j;
-    int key[MAX][MAX];
-    printf("Masukkan ukuran matriks kunci: ");
-    scanf("%d", &n);
-    printf("Masukkan matriks kunci (per baris): \n");
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < n; j++) {
-            scanf("%d", &key[i][j]);
-        }
-    }
-
     // Input password
     char plain_password[MAX];
     bool isValidPassword = false;
@@ -201,7 +200,7 @@ void Register(int index) {
         if (!isAlphaNumeric(password)) {
             printf("Password tidak sesuai kriteria.\n");	// Ketika password false
         } else {
-            isValidPassword = true;		// Ketika passwor true
+            isValidPassword = true;		// Ketika password true
         }
     } while (!isValidPassword);
     
@@ -212,7 +211,8 @@ void Register(int index) {
 
     // Enkripsi password
     char encrypted_password[MAX];
-    encryptPassword(plain_password, key, encrypted_password, n);
+    int key[2][2]={{2, 1}, {3, 4}};			// key yang digunakan untuk enkrip
+    encryptPassword(plain_password, key, encrypted_password, 2);
 
     FILE *f_B;
     f_B = fopen("file_user1.3.txt", "a");
