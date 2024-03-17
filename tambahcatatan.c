@@ -1,4 +1,4 @@
-#include "geraldin.h"
+#include "allmodul.h"
 #include <stdio.h>
 
 int nomorCatatanTerakhir = 0;

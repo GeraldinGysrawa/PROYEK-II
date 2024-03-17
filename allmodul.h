@@ -1,6 +1,6 @@
 
-#ifndef CATATAN_H
-#define CATATAN_H
+#ifndef ALLMODUL_H
+#define ALLMODUL_H
 
 // Struktur data untuk catatan
 struct Catatan {
