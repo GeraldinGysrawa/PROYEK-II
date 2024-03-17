@@ -12,29 +12,29 @@ int bandingkanCatatan(const void *a, const void *b) {
 }
 
 
-// Fungsi untuk membuat catatan baru dengan enkripsi Vigenere
-struct Catatan buatCatatan(char *judul, char *tanggal, char *isi, char *kunciEnkripsi) {
-    struct Catatan catatanBaru;
-    strcpy(catatanBaru.judul, judul);
-    strcpy(catatanBaru.tanggal, tanggal);
-    strcpy(catatanBaru.isi, isi);
+// // Fungsi untuk membuat catatan baru dengan enkripsi Vigenere
+// struct Catatan buatCatatan(char *judul, char *tanggal, char *isi, char *kunciEnkripsi) {
+//     struct Catatan catatanBaru;
+//     strcpy(catatanBaru.judul, judul);
+//     strcpy(catatanBaru.tanggal, tanggal);
+//     strcpy(catatanBaru.isi, isi);
     
-    // Encrypt note content using Vigenere cipher
-    enkripsiVigenere(catatanBaru.isi, kunciEnkripsi);
+//     // Encrypt note content using Vigenere cipher
+//     enkripsiVigenere(catatanBaru.isi, kunciEnkripsi);
 
-    return catatanBaru;
-}
+//     return catatanBaru;
+// }
 
 // Fungsi untuk menambahkan catatan ke dalam file
-void tambahCatatanKeFile(struct Catatan catatanBaru) {
-    FILE *file = fopen("Catatan.txt", "a");
-    if (file == NULL) {
-        printf("Gagal membuka file.\n");
-        return;
-    }
-    fprintf(file, "%d|%s|%s|%s\n", catatanBaru.no, catatanBaru.judul, catatanBaru.tanggal, catatanBaru.isi);
-    fclose(file);
-}
+// void tambahCatatanKeFile(struct Catatan catatanBaru) {
+//     FILE *file = fopen("Catatan.txt", "a");
+//     if (file == NULL) {
+//         printf("Gagal membuka file.\n");
+//         return;
+//     }
+//     fprintf(file, "%d|%s|%s|%s\n", catatanBaru.no, catatanBaru.judul, catatanBaru.tanggal, catatanBaru.isi);
+//     fclose(file);
+// }
 
 // Fungsi untuk membaca catatan dari file dan menyimpannya dalam array
 int bacaCatatanDariFile(struct Catatan *catatan) {
