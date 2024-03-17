@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "allmodul.h"
+#include "catatan.h"
 
 void encryptPassword(char *password, int shift) {
     int i;

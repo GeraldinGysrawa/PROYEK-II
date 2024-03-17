@@ -1,4 +1,4 @@
-#include "allmodul.h"
+#include "catatan.h"
 #include <stdio.h>
 
 int nomorCatatanTerakhir = 0;
