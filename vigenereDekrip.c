@@ -1,7 +1,9 @@
+//vigeneredekrip.c
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "allmodul.h"
+#include "catatan.h"
+
 
 
 void dekripsiVigenere(char teks[], char kunci[]) {
