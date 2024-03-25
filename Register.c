@@ -46,10 +46,12 @@ void encryptPassword(char *plain_password, char *encrypted_password)
         for (i = 0; i < 2; i++) 
 		{
             // Hanya enkripsi karakter alfabet
+            // Mengecek apakah karakter termasuk huruf kecil
             if (plain_password[r * 2 + i] >= 'a' && plain_password[r * 2 + i] <= 'z') 
 			{
                 message[i][0] = plain_password[r * 2 + i] - 'a';
             } else if(plain_password[r * 2 + i] >= 'A' && plain_password[r * 2 + i] <= 'Z'){
+            	// Mengecek apakah karakter termasuk huruf kapital
             	message[i][0] = plain_password[r * 2 + i] - 'A';
             } else {
             	// Salin karakter non-alfabet tanpa enkripsi
@@ -61,12 +63,14 @@ void encryptPassword(char *plain_password, char *encrypted_password)
         multiplyMatrix(key, message, result);
         for (i = 0; i < 2; i++) 
 		{
+			// Mengecek apakah karakter termasuk huruf kecil
             if (plain_password[r * 2 + i] >= 'a' && plain_password[r * 2 + i] <= 'z') 
 			{
                 int num = (result[i][0] % 26);
                 encrypted_password[k++] = num + 'a';
             } else if(plain_password[r * 2 + i] >= 'A' && plain_password[r * 2 + i] <= 'Z') {
-                int num = (result[i][0] % 26);
+                // Mengecek apakah karakter termasuk huruf kapital
+				int num = (result[i][0] % 26);
                 encrypted_password[k++] = num + 'A';
             } else {
             	// Salin karakter non-alfabet tanpa enkripsi
@@ -94,11 +98,15 @@ bool isEmailValid(char *email)
             atCount++;
         }
     }
+    
+    // Mengecek apakah domain dari email adalah gmail.com
     char *domain = strstr(email, "@");
     if (domain != NULL && (strcmp(domain + 1, "gmail.com") != 0))
 	{
         return false;
     }
+    
+    // Mengecek apakah '@' hanya ada satu dalam email
     if (atCount == 1)
 	{
         return true;
@@ -109,12 +117,6 @@ bool isEmailValid(char *email)
 // Untuk check username
 bool isUsernameExists(char *username) 
 {
-
-	if (strlen(username) > 20) 
-    {
-        printf("Username tidak boleh lebih dari 20 karakter.\n");
-        return true; // Username tidak valid, kembalikan true
-    }
     FILE *file = fopen("file_user1.3.txt", "r");
     if (file == NULL) 
 	{
@@ -122,12 +124,13 @@ bool isUsernameExists(char *username)
         return true; // Return true untuk memastikan pengguna diminta untuk memasukkan username lain
     }
 	
-
+	// Mencari username yang ada didalam file
     char line[100];
     while (fgets(line, sizeof(line), file) != NULL) 
 	{
         char saved_username[20];
         sscanf(line, "%*s %*s %s", saved_username);
+        // Mengecek apakah username sudah digunakan atau belum
         if (strcmp(saved_username, username) == 0) 
 		{
             fclose(file);
@@ -146,19 +149,22 @@ bool isAlphaNumeric(char *password)
     int length = 0;
     int i;
 	
-
+	// Mengecek apakah password terdiri dari karakter dan angka
     while (password[i] != '\0') 
 	{
+		// Jika terdapat karakter
         if (isalpha(password[i])) 
 		{
             hasLetter = true;
         } else if (isdigit(password[i])) {
+        	// Jika terdapat angka
             hasDigit = true;
         }
         length++;
         i++;
     }
-
+	
+	// Mengecek apakah password memiliki karakter lebih dari 8
     if(length >= 8)
 	{
     	return hasLetter && hasDigit;
@@ -173,6 +179,8 @@ void Register(int index)
     char email[30];
     char password[20];
     struct users user[100];
+    
+    // Mengecek apakah index sudah mencapai batas
     if (index >= 100) 
 	{
         printf("Batas pengguna telah tercapai.\n");
@@ -181,7 +189,8 @@ void Register(int index)
 
     system("cls");
     printf("\tRegister Akun\n\n");
-
+	
+	// Input nama user
     printf("Masukkan nama anda : ");
     scanf("%s", user[index].Nama);
 
@@ -191,6 +200,8 @@ void Register(int index)
 	{
         printf("Masukkan email (@gmail.com) : ");
         scanf("%s", email);
+        
+        // Mengecek apakah email valid atau tidak
         if (!isEmailValid(email)) 
 		{
             printf("Alamat email tidak valid.\n");
@@ -208,12 +219,22 @@ void Register(int index)
 	{
         printf("Masukkan username : ");
         scanf("%s", user[index].username);
-        if (isUsernameExists(user[index].username)) 
-		{
-            printf("Username sudah digunakan. Masukkan username lain.\n");
-        } else {
-            isUsernameValid = true;
-        }
+        
+		// Mengecek apakah username lebih dari 20 karakter
+		if (strlen(user[index].username) <= 20) 
+    	{
+    		// Mengecek apakah username sudah digunakan atau belum
+        	if (isUsernameExists(user[index].username)) 
+			{
+        	    printf("Username sudah digunakan. Masukkan username lain.\n");
+        	} else {
+        	    isUsernameValid = true;
+        	}
+    	}else if(strlen(user[index].username) > 20){
+    		// Jika username lebih dari 20 karakter
+			printf("Username tidak boleh lebih dari 20 karakter.\n");
+		}    
+
     } while (!isUsernameValid);
 
     // Meminta pengguna untuk memasukkan password yang memenuhi kriteria
@@ -223,7 +244,8 @@ void Register(int index)
 	{
         printf("Masukkan password (Minimal 8 karakter, terdiri dari angka dan huruf): ");
         scanf("%s", password);
-
+		
+		// Mengecek apakah password sudah memenuhi kriteria yang diminta atau tidak
         if (!isAlphaNumeric(password)) 
 		{
             printf("Password tidak sesuai kriteria.\n");
