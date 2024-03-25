@@ -1,10 +1,10 @@
-#ifndef CATATAN_H
-#define CATATAN_H
+#ifndef SANDI_H
+#define SANDI_H
 
-void encryptPassword(char *password, int shift);
-void decryptPassword(char *password, int shift);
-void readEncryptedPassword(char *encryptedPassword);
-void saveEncryptedPassword(char *encryptedPassword);
+#define MAX_SANDI 100
 
-#endif /* CATATAN_H */
+void enkripsiSandi(char *sandi, int shift);
+void dekripsiSandi(char *sandi, int shift);
+void saveEncryptedPassword(char *sandiTerenkripsi);
 
+#endif /* SANDI_H */
