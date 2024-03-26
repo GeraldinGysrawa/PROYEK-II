@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "annisa.h"
+#include "sandi.h"
+#include "catatan.h"
+#include <stdbool.h>
 
 #define MAX_SANDI 100
+#define MAX_JUDUL 100
+#define MAX_KEY 100
 
 int shift = 3;
 
@@ -32,7 +36,7 @@ void dekripsiSandi(char *sandi, int shift) {
 }
 
 void saveEncryptedPassword(char *sandiTerenkripsi) {
-    FILE *file = fopen("catatan.txt", "a+");
+    FILE *file = fopen("sandi.txt", "a+");
     if (file != NULL) {
         fprintf(file, "%s\n", sandiTerenkripsi);
         fclose(file);
@@ -42,32 +46,89 @@ void saveEncryptedPassword(char *sandiTerenkripsi) {
 }
 
 void untukSandi() {
+    int shift = 3; // Caesar cipher shift value
     char sandi[100];
-    printf("Masukkan sandi: ");
-    fgets(sandi, sizeof(sandi), stdin);
-    sandi[strcspn(sandi, "\n")] = '\0';
 
-    enkripsiSandi(sandi, shift);
+    printf("Masukkan kata sandi: ");
+    scanf(" %[^\n]", sandi); // Read password from user
+    getchar(); // Consume newline character left by scanf
 
-    saveEncryptedPassword(sandi);
-    printf("Catatan telah dikunci.\n");
+    enkripsiSandi(sandi, shift); // Encrypt the password using Caesar cipher
 
+    saveEncryptedPassword(sandi); // Save the encrypted password to file
+    printf("Kata sandi telah terenkripsi dan disimpan.\n");
+}
+
+/*void tampilSandi() {
+    char sandi[MAX_SANDI];
+	retry;
     printf("Masukkan sandi untuk membuka catatan: ");
-    fgets(sandi, sizeof(sandi), stdin);
-    sandi[strcspn(sandi, "\n")] = '\0'; 
+    scanf(" %[^\n]", sandi); // Membaca sandi dari pengguna
+    getchar(); // Mengonsumsi karakter newline yang tersisa dari scanf
 
-    FILE *file = fopen("catatan.txt", "r");
+    FILE *file = fopen("sandi.txt", "r");
     char storedEncryptedPassword[100];
+    bool passwordCorrect = false; // Flag untuk melacak keberhasilan pencocokan sandi
+
     if (file != NULL) {
         while (fscanf(file, "%s", storedEncryptedPassword) != EOF) {
-            dekripsiSandi(storedEncryptedPassword, shift);
-            if (strcmp(sandi, storedEncryptedPassword) == 0) {
-                printf("Catatan telah terbuka.\n");
-                fclose(file);
+            char decryptedPassword[100];
+            strcpy(decryptedPassword, storedEncryptedPassword);
+            dekripsiSandi(decryptedPassword, shift); // Mendekripsi sandi yang tersimpan
+
+            // Membandingkan sandi yang dimasukkan dengan sandi yang telah didekripsi
+            if (strcmp(sandi, decryptedPassword) == 0) {
+                passwordCorrect = true; // Setel flag menjadi true jika sandi cocok
+                break; // Keluar dari loop karena sandi sudah ditemukan
             }
         }
-        fclose(file);
+        fclose(file); // Tutup file setelah selesai pencarian
     }
 
-    printf("Kata sandi salah. Catatan gagal dibuka.\n");
+    // Jika sandi yang dimasukkan tidak sesuai dengan yang ada di file
+    if (!passwordCorrect) {
+        printf("Kata sandi salah atau tidak ada sandi yang tersimpan.\n");
+        goto retry;
+        return; // Keluar dari fungsi jika sandi tidak sesuai
+    }
+}*/
+    // Jika sampai di sini, artinya sandi yang dimasukkan cocok dengan yang ada di file
+    // Buka dan tampilkan isi catatan
+//    tampilIsiCatatan();
+
+
+
+
+void tampilSandi() {
+    char sandi[MAX_SANDI];
+    bool passwordCorrect = false; // Flag untuk melacak keberhasilan pencocokan sandi
+
+    while (!passwordCorrect) {
+        printf("Masukkan sandi untuk membuka catatan: ");
+        scanf(" %[^\n]", sandi); // Membaca sandi dari pengguna
+        getchar(); // Mengonsumsi karakter newline yang tersisa dari scanf
+
+        FILE *file = fopen("sandi.txt", "r");
+        char storedEncryptedPassword[100];
+
+        if (file != NULL) {
+            while (fscanf(file, "%s", storedEncryptedPassword) != EOF) {
+                char decryptedPassword[100];
+                strcpy(decryptedPassword, storedEncryptedPassword);
+                dekripsiSandi(decryptedPassword, shift); // Mendekripsi sandi yang tersimpan
+
+                // Membandingkan sandi yang dimasukkan dengan sandi yang telah didekripsi
+                if (strcmp(sandi, decryptedPassword) == 0) {
+                    passwordCorrect = true; // Setel flag menjadi true jika sandi cocok
+                    break; // Keluar dari loop karena sandi sudah ditemukan
+                }
+            }
+            fclose(file); // Tutup file setelah selesai pencarian
+        }
+
+        // Jika sandi yang dimasukkan tidak sesuai dengan yang ada di file
+        if (!passwordCorrect) {
+            printf("Kata sandi salah atau tidak ada sandi yang tersimpan.\n");
+        }
+    }
 }
