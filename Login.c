@@ -4,8 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <conio.h>
-#include "catatan.h"
-#include "Login.h"
+#include "dhea.h"
 #define MAX 100
 
 // Prototype

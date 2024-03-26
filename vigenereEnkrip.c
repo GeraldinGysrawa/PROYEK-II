@@ -1,8 +1,8 @@
 //vigenereenkrip.c
-#include "catatan.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "geraldin.h"
 
 
 void enkripsiVigenere(char teks[], char kunci[]) {

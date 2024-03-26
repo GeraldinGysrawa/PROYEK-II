@@ -1,5 +1,5 @@
-#ifndef LOGIN_REGISTER_H
-#define LOGIN_REGISTER_H
+#ifndef RIZKY_H
+#define RIZKY_H
 
 #include <stdbool.h>
 
@@ -11,7 +11,7 @@ struct users {
     char username[20];
 };
 
-
+//Rizky
 int checkCredentials(char *username, char *password, char *file_name);
 void getPasswordByUsername(char *username, char *decrypted_password);
 bool isAlphaNumeric(char *password);
@@ -22,4 +22,4 @@ void encryptPassword(char *plain_password, char *encrypted_password);
 void Register(int index);
 
 
-#endif /* LOGIN_REGISTER_H */
+#endif 

@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-#include "catatan.h"
-#include "LoginRegister.h"
+#include "annisa.h"
+#include "dhea.h"
+#include "geraldin.h"
+#include "ikhsan.h"
+#include "rizky.h"
 
 int main() {
     int num;

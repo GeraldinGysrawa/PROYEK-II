@@ -4,10 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "catatan.h"
-#include "LoginRegister.h"
-
-int nomorCatatanTerakhir = 0;
+#include "geraldin.h"
+#include "ikhsan.h"
+#include "annisa.h"
 
 void MenuUtama() {
     int pilihan;
@@ -73,19 +72,30 @@ void hapusLayar() {
 }
 
 void tambahCatatan() {
-    FILE *file = fopen("Catatan.txt", "a");
+    int nomorCatatanTerakhir = 0; 
+
+    // Membaca nomor catatan terakhir dari file jika tersedia
+    FILE *file = fopen("Catatan.txt", "r");
+    if (file != NULL) {
+        char line[100];
+        while (fgets(line, sizeof(line), file) != NULL) {
+            sscanf(line, "%d", &nomorCatatanTerakhir);
+        }
+        fclose(file);
+        nomorCatatanTerakhir++; 
+    }
+
+    file = fopen("Catatan.txt", "a");
     if (file == NULL) {
         printf("Error: Gagal membuka file.\n");
         return;
     }
 
     struct Catatan catatan;
-    nomorCatatanTerakhir++;        
-
-    catatan.no = nomorCatatanTerakhir;
+    catatan.no = nomorCatatanTerakhir; 
 
     printf("\tMasukkan judul catatan: ");
-    scanf(" %[^\n]s", catatan.judul);
+    scanf(" %[^\n]", catatan.judul);
 
     // Ambil tanggal saat ini
     time_t rawtime;
@@ -96,15 +106,13 @@ void tambahCatatan() {
     strftime(buffer, sizeof(buffer), "%d/%m/%Y", info);
     strcpy(catatan.tanggal, buffer);
 
-    printf("\tMasukkan isi catatan:\n");
-    scanf(" %[^\n]s", catatan.isi);
+    printf("\tMasukkan isi catatan: ");
+    scanf("\t\t\t %[^\n]", catatan.isi);
 
-    //proses enkripsi
-    char kunci[MAX_KEY] = "PROYEK";
-    enkripsiVigenere(catatan.isi, kunci);
-    
-    enkripsiVigenere(catatan.isi, kunci);
-    
+    char kunci[100] = "PROYEK";
+    enkripsiVigenere(catatan.isi, kunci); // Melakukan enkripsi pada isi catatan sebelum disimpan
+
+    // Simpan catatan ke file
     fprintf(file, "%d|%s|%s|%s\n", catatan.no, catatan.judul, catatan.tanggal, catatan.isi);
 
     fclose(file);
@@ -186,7 +194,7 @@ void tampilIsiCatatan(char judul[]) {
             printf("\tIsi:\n");
             
             // Baca kunci enkripsi dari pengguna
-            char kunci[MAX_KEY] = "PROYEK";
+            char kunci[100] = "PROYEK";
             dekripsiVigenere(catatan.isi, kunci);
             
             // Tampilkan isi catatan yang telah didekripsi dengan format vertikal
@@ -205,7 +213,6 @@ void tampilIsiCatatan(char judul[]) {
         printf("\tCatatan dengan judul '%s' tidak ditemukan.\n", judul);
     }
 }
-
 
 void editCatatan(char judul[]) {
     int i, j;
@@ -250,7 +257,7 @@ void editCatatan(char judul[]) {
                     strcpy(catatan[i].tanggal, buffer);
                     break;
                 case 2:
-                    printf("\tMasukkan isi baru:\n");
+                    printf("\tMasukkan isi baru: ");
                     scanf(" %[^\n]s", catatan[i].isi);
                     // Perbarui tanggal saat ini
                     time(&rawtime);
